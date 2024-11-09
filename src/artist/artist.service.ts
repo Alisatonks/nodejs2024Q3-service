@@ -24,7 +24,7 @@ export class ArtistService {
       throw new HttpException(`Id ${id} is not valid`, 400);
     }
     if (!artist) {
-      throw new HttpException(`User id ${id} does not exist`, 404);
+      throw new HttpException(`Artist id ${id} does not exist`, 404);
     }
     return new Promise((resolve) => {
       return resolve(artist);
@@ -47,7 +47,7 @@ export class ArtistService {
     }
     const artist = findArtist(id);
     if (!artist) {
-      throw new HttpException(`User id ${id} does not exist`, 404);
+      throw new HttpException(`Artist id ${id} does not exist`, 404);
     }
     return new Promise((resolve) => {
       return resolve(updateArts(id, artistsData));
@@ -61,7 +61,7 @@ export class ArtistService {
       throw new HttpException(`Id ${id} is not valid`, 400);
     }
     if (!artist) {
-      throw new HttpException(`User id ${id} does not exist`, 404);
+      throw new HttpException(`Artist id ${id} does not exist`, 404);
     }
     return new Promise((resolve) => {
       return resolve(deleteArtist(id));

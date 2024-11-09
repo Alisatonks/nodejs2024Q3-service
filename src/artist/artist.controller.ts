@@ -13,7 +13,6 @@ import { CreateArtistDto } from './dto/createArtist.dto';
 
 @Controller('artist')
 export class ArtistController {
-  userService: any;
   constructor(private artistService: ArtistService) {}
 
   @Get()

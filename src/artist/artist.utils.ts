@@ -1,6 +1,7 @@
 import { Artist } from 'src/types';
 import { CreateArtistDto } from './dto/createArtist.dto';
 import { findIndex } from 'src/utils/helpers';
+import { deleteRef } from 'src/album/album.utils';
 
 export const ARTISTS = [
   {
@@ -47,5 +48,6 @@ export const deleteArtist = (id: string) => {
   const index = findIndex(id, ARTISTS);
   if (index !== -1) {
     ARTISTS.splice(index, 1);
+    deleteRef(id);
   }
 };

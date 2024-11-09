@@ -21,3 +21,11 @@ export interface Album {
   year: number;
   artistId: string | null;
 }
+
+export interface Track {
+  id: string;
+  name: string;
+  artistId: string | null;
+  albumId: string | null;
+  duration: number;
+}
