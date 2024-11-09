@@ -6,9 +6,11 @@ import {
   HttpCode,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/createUser.dto';
+import { UpdatePasswordDto } from './dto/updatePassword.dto';
 
 @Controller('user')
 export class UserController {
@@ -33,5 +35,13 @@ export class UserController {
   @HttpCode(204)
   async deleteUser(@Param('id') id: string) {
     return this.userService.deleteUser(id);
+  }
+
+  @Put(':id')
+  async updatePassword(
+    @Param('id') id: string,
+    @Body() password: UpdatePasswordDto,
+  ) {
+    return this.userService.updatePassword(id, password);
   }
 }

@@ -1,6 +1,7 @@
 import { User } from 'src/types';
 import { CreateUserDto } from './dto/createUser.dto';
 import * as crypto from 'crypto';
+import { UpdatePasswordDto } from './dto/updatePassword.dto';
 
 export const USERS = [
   {
@@ -12,6 +13,10 @@ export const USERS = [
     updatedAt: 1700000000000,
   },
 ];
+
+const findIndex = (id: string) => {
+  return USERS.findIndex((user) => user.id === id);
+};
 
 export const getUsers = () => USERS.map(({ password, ...rest }) => rest);
 
@@ -46,8 +51,30 @@ export const addUser = (user: CreateUserDto) => {
 };
 
 export const deleteUser = (id: string) => {
-  const index = USERS.findIndex((user) => user.id === id);
+  const index = findIndex(id);
   if (index !== -1) {
     USERS.splice(index, 1);
   }
+};
+
+export const validatePassword = (id: string, passwords: UpdatePasswordDto) => {
+  const index = findIndex(id);
+  if (passwords.oldPassword === USERS[index].password) {
+    return true;
+  }
+  return false;
+};
+
+export const updatePswd = (id: string, passwords: UpdatePasswordDto) => {
+  const index = findIndex(id);
+  let newUser: User;
+  if (index !== -1) {
+    newUser = USERS[index];
+    newUser.password = passwords.newPassword;
+    newUser.version += 1;
+    const updatedAt = Date.now();
+    newUser.updatedAt = updatedAt;
+    USERS.splice(index, 1, newUser);
+  }
+  return getUser(newUser);
 };
