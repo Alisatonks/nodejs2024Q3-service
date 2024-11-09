@@ -1,20 +1,17 @@
 import { Injectable, HttpException } from '@nestjs/common';
-import { USERS, findUser, validateId } from './users.db';
+import { USERS, findUser, validateId, addUser, getUsers, getUser } from './user.utils';
+import { ReturnedUser, User } from 'src/types';
+import { CreateUserDto } from './dto/createUser.dto';
 
 @Injectable()
 export class UserService {
 
-    private users = USERS.map(({password, ...rest}) => rest);
-
-    public async getUsers() {
-        return this.users;
+    public async getUsers(): Promise<ReturnedUser[]>{
+        const users = getUsers();
+        return users;
     }
 
-    public async postUsers(user) {
-
-    }
-
-    public async getUserById(id: string) {
+    public async getUserById(id: string): Promise<ReturnedUser> {
         const user = findUser(id);
         const validId = validateId(id);
         if(!validId) {
@@ -23,6 +20,15 @@ export class UserService {
         if(!user) {
             throw new HttpException(`User id ${id} does not exist`, 404)
         }
-        return user;
+        return new Promise((resolve) => {
+            return resolve(getUser(user));
+        })
+       
+    }
+
+    public async postUser(user: CreateUserDto): Promise<any> {
+        return new Promise((resolve) => {
+            return resolve(addUser(user));
+        })
     }
 }
