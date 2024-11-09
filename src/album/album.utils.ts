@@ -1,6 +1,7 @@
 import { findIndex } from 'src/utils/helpers';
 import { CreateAlbumDto } from './dto/createAlbum.dto';
 import { Album } from 'src/types';
+import { deleteTrackRef } from 'src/track/track.utils';
 
 export const ALBUMS = [
   {
@@ -51,12 +52,11 @@ export const deleteAlbum = (id: string) => {
   const index = findIndex(id, ALBUMS);
   if (index !== -1) {
     ALBUMS.splice(index, 1);
+    deleteTrackRef(id, 'albumId');
   }
 };
 
-export const deleteRef = (artistId: string) => {
-  const newAlbum = ALBUMS.find((alb) => alb.artistId === artistId);
-  if (newAlbum) {
-    newAlbum.artistId = null;
-  }
+export const deleteAlbumRef = (artistId: string) => {
+  const filtered = ALBUMS.filter((alb) => alb.artistId === artistId);
+  filtered.forEach((el) => (el.artistId = null));
 };

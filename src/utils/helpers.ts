@@ -1,7 +1,10 @@
-import { Album, Artist, User } from 'src/types';
+import { Album, Artist, Track, User } from 'src/types';
 
-export const findIndex = (id: string, array: User[] | Artist[] | Album[]) => {
-  return array.findIndex((el: User | Artist | Album) => el.id === id);
+export const findIndex = (
+  id: string,
+  array: User[] | Artist[] | Album[] | Track[],
+) => {
+  return array.findIndex((el: User | Artist | Album | Track) => el.id === id);
 };
 
 export const validateId = (id: string) => {
