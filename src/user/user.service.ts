@@ -1,7 +1,6 @@
 import { Injectable, HttpException } from '@nestjs/common';
 import {
   findUser,
-  validateId,
   addUser,
   getUsers,
   getUser,
@@ -9,9 +8,10 @@ import {
   updatePswd,
   validatePassword,
 } from './user.utils';
-import { ReturnedUser } from 'src/types';
+import { ReturnedUser, User } from 'src/types';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdatePasswordDto } from './dto/updatePassword.dto';
+import { validateId } from 'src/utils/helpers';
 
 @Injectable()
 export class UserService {
@@ -21,7 +21,7 @@ export class UserService {
   }
 
   public async getUserById(id: string): Promise<ReturnedUser> {
-    const user = findUser(id);
+    const user = findUser(id) as User;
     const validId = validateId(id);
     if (!validId) {
       throw new HttpException(`Id ${id} is not valid`, 400);

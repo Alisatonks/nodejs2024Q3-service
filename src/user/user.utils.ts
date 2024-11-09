@@ -2,6 +2,7 @@ import { User } from 'src/types';
 import { CreateUserDto } from './dto/createUser.dto';
 import * as crypto from 'crypto';
 import { UpdatePasswordDto } from './dto/updatePassword.dto';
+import { findIndex } from 'src/utils/helpers';
 
 export const USERS = [
   {
@@ -14,10 +15,6 @@ export const USERS = [
   },
 ];
 
-const findIndex = (id: string) => {
-  return USERS.findIndex((user) => user.id === id);
-};
-
 export const getUsers = () => USERS.map(({ password, ...rest }) => rest);
 
 export const getUser = ({ password, ...rest }: User) => {
@@ -26,12 +23,6 @@ export const getUser = ({ password, ...rest }: User) => {
 
 export const findUser = (id: string) => {
   return USERS.find((user) => user.id === id);
-};
-
-export const validateId = (id: string) => {
-  const regExp =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return regExp.test(id);
 };
 
 export const addUser = (user: CreateUserDto) => {
@@ -51,14 +42,14 @@ export const addUser = (user: CreateUserDto) => {
 };
 
 export const deleteUser = (id: string) => {
-  const index = findIndex(id);
+  const index = findIndex(id, USERS);
   if (index !== -1) {
     USERS.splice(index, 1);
   }
 };
 
 export const validatePassword = (id: string, passwords: UpdatePasswordDto) => {
-  const index = findIndex(id);
+  const index = findIndex(id, USERS);
   if (passwords.oldPassword === USERS[index].password) {
     return true;
   }
@@ -66,7 +57,7 @@ export const validatePassword = (id: string, passwords: UpdatePasswordDto) => {
 };
 
 export const updatePswd = (id: string, passwords: UpdatePasswordDto) => {
-  const index = findIndex(id);
+  const index = findIndex(id, USERS);
   let newUser: User;
   if (index !== -1) {
     newUser = USERS[index];
