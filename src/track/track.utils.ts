@@ -1,10 +1,18 @@
 import { findIndex } from 'src/utils/helpers';
 import { CreateTrackDto } from './dto/createTrack.dto';
 import { Track } from 'src/types';
+import { deleteTrackFromFavs } from 'src/favs/favs.utils';
 
 export const TRACKS = [
   {
     id: '7b1f52c1-2d8a-4b9c-95ed-d9a9f6a3e8b8',
+    name: 'Higher',
+    artistId: '6b1f52c1-3d8a-4b9c-95ed-d9a9f6a3e8b8',
+    albumId: '5b1f52c1-5d8a-4b9c-95ed-d9a9f4a4e8b9',
+    duration: 120,
+  },
+  {
+    id: '7b1f52c1-2d5a-4b9c-95ed-d8a9f6a3e8b8',
     name: 'Higher',
     artistId: '6b1f52c1-3d8a-4b9c-95ed-d9a9f6a3e8b8',
     albumId: '5b1f52c1-5d8a-4b9c-95ed-d9a9f4a4e8b9',
@@ -47,6 +55,7 @@ export const updateTrack = (id: string, newData: CreateTrackDto) => {
 export const deleteTrack = (id: string) => {
   const index = findIndex(id, TRACKS);
   if (index !== -1) {
+    deleteTrackFromFavs(id);
     TRACKS.splice(index, 1);
   }
 };

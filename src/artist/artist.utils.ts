@@ -3,6 +3,7 @@ import { CreateArtistDto } from './dto/createArtist.dto';
 import { findIndex } from 'src/utils/helpers';
 import { deleteAlbumRef } from 'src/album/album.utils';
 import { deleteTrackRef } from 'src/track/track.utils';
+import { deleteArtistFromFavs } from 'src/favs/favs.utils';
 
 export const ARTISTS = [
   {
@@ -48,6 +49,7 @@ export const updateArts = (id: string, newData: CreateArtistDto) => {
 export const deleteArtist = (id: string) => {
   const index = findIndex(id, ARTISTS);
   if (index !== -1) {
+    deleteArtistFromFavs(id);
     ARTISTS.splice(index, 1);
     deleteAlbumRef(id);
     deleteTrackRef(id, 'artistId');
