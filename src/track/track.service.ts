@@ -1,40 +1,42 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/createTrack.dto';
 import { Track } from 'src/types';
-import {
-  addTrack,
-  deleteTrack,
-  findTrack,
-  TRACKS,
-  updateTrack,
-} from './track.utils';
 import { validateId } from 'src/utils/helpers';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CustomTrack } from './track.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TrackService {
+  constructor(
+    @InjectRepository(CustomTrack)
+    private tracksRepository: Repository<CustomTrack>,
+  ) {}
+
   public async getTracks(): Promise<Track[]> {
-    const tracks = TRACKS;
+    const tracks = await this.tracksRepository.find();
     return tracks;
   }
 
   public async getTrackById(id: string): Promise<Track> {
-    const track = findTrack(id);
     const validId = validateId(id);
     if (!validId) {
       throw new HttpException(`Id ${id} is not valid`, 400);
     }
+    const track = await this.tracksRepository.findOne({ where: { id } });
     if (!track) {
       throw new HttpException(`Track id ${id} does not exist`, 404);
     }
-    return new Promise((resolve) => {
-      return resolve(track);
-    });
+    return track;
   }
 
   public async postTrack(track: CreateTrackDto): Promise<Track> {
-    return new Promise((resolve) => {
-      return resolve(addTrack(track));
+    const newTrack = this.tracksRepository.create({
+      ...track,
     });
+    await this.tracksRepository.save(newTrack);
+
+    return newTrack;
   }
 
   public async updateTrack(
@@ -45,26 +47,29 @@ export class TrackService {
     if (!validId) {
       throw new HttpException(`Id ${id} is not valid`, 400);
     }
-    const track = findTrack(id);
+    const track = await this.tracksRepository.findOne({ where: { id } });
     if (!track) {
       throw new HttpException(`Track id ${id} does not exist`, 404);
     }
-    return new Promise((resolve) => {
-      return resolve(updateTrack(id, trackData));
-    });
+    track.name = trackData.name;
+    track.duration = trackData.duration;
+    track.artistId = trackData.artistId;
+    track.albumId = trackData.albumId;
+
+    await this.tracksRepository.save(track);
+
+    return track;
   }
 
   public async deleteTrack(id: string): Promise<void> {
-    const track = findTrack(id);
     const validId = validateId(id);
     if (!validId) {
       throw new HttpException(`Id ${id} is not valid`, 400);
     }
+    const track = await this.tracksRepository.findOne({ where: { id } });
     if (!track) {
       throw new HttpException(`Track id ${id} does not exist`, 404);
     }
-    return new Promise((resolve) => {
-      return resolve(deleteTrack(id));
-    });
+    await this.tracksRepository.delete(id);
   }
 }
