@@ -1,57 +1,71 @@
 import { Injectable, HttpException } from '@nestjs/common';
-import {
-  findUser,
-  addUser,
-  getUsers,
-  getUser,
-  deleteUser,
-  updatePswd,
-  validatePassword,
-} from './user.utils';
-import { ReturnedUser, User } from 'src/types';
+import { ReturnedUser } from 'src/types';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdatePasswordDto } from './dto/updatePassword.dto';
 import { validateId } from 'src/utils/helpers';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CustomUser } from './user.entity';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectRepository(CustomUser)
+    private usersRepository: Repository<CustomUser>,
+  ) {}
+
   public async getUsers(): Promise<ReturnedUser[]> {
-    const users = getUsers();
-    return users;
+    const users = await this.usersRepository.find();
+    return users.map(({ password, ...rest }) => rest);
   }
 
   public async getUserById(id: string): Promise<ReturnedUser> {
-    const user = findUser(id) as User;
     const validId = validateId(id);
     if (!validId) {
       throw new HttpException(`Id ${id} is not valid`, 400);
     }
+
+    const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
       throw new HttpException(`User id ${id} does not exist`, 404);
     }
-    return new Promise((resolve) => {
-      return resolve(getUser(user));
-    });
+    const { password, ...rest } = user;
+    return rest;
   }
 
   public async postUser(user: CreateUserDto): Promise<ReturnedUser> {
-    return new Promise((resolve) => {
-      return resolve(addUser(user));
+    const createdAt = Date.now();
+    const newUser = this.usersRepository.create({
+      ...user,
+      version: 1,
+      createdAt,
+      updatedAt: createdAt,
     });
+    const savedUser = await this.usersRepository.save(newUser);
+    const { password, ...rest } = savedUser;
+    return rest;
   }
 
   public async deleteUser(id: string): Promise<void> {
-    const user = findUser(id);
     const validId = validateId(id);
     if (!validId) {
       throw new HttpException(`Id ${id} is not valid`, 400);
     }
+
+    const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
       throw new HttpException(`User id ${id} does not exist`, 404);
     }
-    return new Promise((resolve) => {
-      return resolve(deleteUser(id));
-    });
+
+    try {
+      await this.usersRepository.delete(id);
+      console.log(`User with id ${id} deleted successfully`);
+    } catch (error) {
+      throw new HttpException(
+        `Error deleting user with id ${id}: ${error.message}`,
+        500,
+      );
+    }
   }
 
   public async updatePassword(
@@ -62,15 +76,19 @@ export class UserService {
     if (!validId) {
       throw new HttpException(`Id ${id} is not valid`, 400);
     }
-    const user = findUser(id);
+    const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
       throw new HttpException(`User id ${id} does not exist`, 404);
     }
-    if (!validatePassword(id, passwords)) {
+    if (user.password !== passwords.oldPassword) {
       throw new HttpException(`Provided password is not valid`, 403);
     }
-    return new Promise((resolve) => {
-      return resolve(updatePswd(id, passwords));
-    });
+    user.password = passwords.newPassword;
+    user.version += 1;
+    user.updatedAt = Date.now();
+
+    const updatedUser = await this.usersRepository.save(user);
+    const { password, ...rest } = updatedUser;
+    return rest;
   }
 }
