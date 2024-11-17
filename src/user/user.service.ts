@@ -59,7 +59,6 @@ export class UserService {
 
     try {
       await this.usersRepository.delete(id);
-      console.log(`User with id ${id} deleted successfully`);
     } catch (error) {
       throw new HttpException(
         `Error deleting user with id ${id}: ${error.message}`,
