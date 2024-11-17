@@ -6,6 +6,7 @@ import { TrackModule } from './track/track.module';
 import { FavsModule } from './favs/favs.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DatabaseType } from './types';
 
 @Module({
   imports: [
@@ -18,12 +19,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TrackModule,
     FavsModule,
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: '127.0.0.1',
-      port: 5432,
-      username: 'postgres',
-      password: 'Gryffindor123+',
-      database: 'homelibrary',
+      type: process.env.TYPE as DatabaseType,
+      host: process.env.POSTGRESS_HOST,
+      port: parseInt(process.env.POSTGRESS_PORT),
+      username: process.env.POSTGRESS_USER,
+      password: process.env.POSTGRESS_PASSWORD,
+      database: process.env.POSTGRESS_DATABASE,
       autoLoadEntities: true,
       synchronize: true,
     }),

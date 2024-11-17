@@ -41,3 +41,11 @@ export interface Favorites {
   albums: string[];
   tracks: string[];
 }
+
+export type DatabaseType =
+  | 'mysql'
+  | 'postgres'
+  | 'mariadb'
+  | 'sqlite'
+  | 'mssql'
+  | 'oracle';
