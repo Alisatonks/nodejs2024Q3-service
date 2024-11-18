@@ -11,18 +11,25 @@
 git clone {repository URL}
 ```
 
+```
+cd nodejs2024Q3-service
+```
 ## Installing NPM modules
+
+```
+git checkout part2
+```
 
 ```
 npm install
 ```
 
-## Running application
+## Running application with Docker
 
 ```
-npm start
+docker-compose up --build
 ```
-You can find .envExample in root folder and modify it in .env. By default App will start at port 4000.
+
 You can open in your browser OpenAPI documentation by typing http://localhost:4000/doc.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
@@ -40,6 +47,12 @@ To run only one of all test suites
 
 ```
 npm run test -- <path to suite>
+```
+
+### Script for vulnerabilities scanning
+
+```
+npm run audit
 ```
 
 ### Auto-fix and format
