@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   nestapp:
     container_name: nestapp
@@ -14,6 +16,8 @@ services:
       POSTGRESS_PORT: 5432
     depends_on:
       - db
+    networks:
+      - my-bridge-network  # Подключаем контейнер к user-defined bridge
 
   db:
     container_name: db
@@ -26,6 +30,12 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - my-bridge-network  # Подключаем контейнер к user-defined bridge
 
 volumes:
   pgdata: {}
+
+networks:
+  my-bridge-network:
+    driver: bridge  # Создаем user-defined bridge
