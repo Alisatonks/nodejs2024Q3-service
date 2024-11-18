@@ -26,6 +26,8 @@ npm install
 
 ## Running application with Docker
 
+Launch docker desktop
+
 ```
 docker-compose up --build
 ```
@@ -67,7 +69,7 @@ npm run format
 ### Endpoints
 
 1. User
-- GET /user - get all users. By default in App there is 1 user.
+- GET /user - get all users.
 Server should answer with status code 200 and all users records
 
 - GET /user/:id - get single user by id. 
@@ -106,7 +108,7 @@ Server should answer with status code 404 and corresponding message if record wi
 
 2. Tracks (/track route)
 
-- GET /track - get all tracks. By default there are 2 tracks when starting App.
+- GET /track - get all tracks. 
 Server should answer with status code 200 and all tracks records;
 
 - GET /track/:id - get single track by id.
@@ -150,7 +152,7 @@ Server should answer with status code 404 and corresponding message if record wi
 
 3. Artists (/artist route)
 
-- GET /artist - get all artists. By default there are 2 artists when starting App.
+- GET /artist - get all artists. 
 Server should answer with status code 200 and all artists records.
 
 - GET /artist/:id - get single artist by id.
@@ -192,7 +194,7 @@ Server should answer with status code 404 and corresponding message if record wi
 
 4. Albums (/album route)
 
-- GET /album - get all albums. By default there are 2 albums when starting App.
+- GET /album - get all albums. 
 Server should answer with status code 200 and all albums records;
 
 - GET /album/:id - get single album by id.
@@ -232,7 +234,7 @@ Server should answer with status code 404 and corresponding message if record wi
  
 5. Favorites
 
-- GET /favs - get all favorites. By default it is an empty array.
+- GET /favs - get all favorites. 
 Server should answer with status code 200 and all favorite records (not their ids), split by entity type:
 ```
 {
