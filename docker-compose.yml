@@ -1,18 +1,19 @@
 services:
   nestapp:
     container_name: nestapp
-    build: .
+    env_file: .env
+    build: . 
     image: homelibrary/nestapp:1.0.0
     init: true
     ports:
-      - "4000:4000"
+      - "${PORT}:${PORT}"
     environment:
-      TYPE: postgres
+      TYPE: "${TYPE}"
       POSTGRESS_HOST: db
-      POSTGRESS_USER: postgres
-      POSTGRESS_PASSWORD: password
-      POSTGRESS_DATABASE: homelibrary
-      POSTGRESS_PORT: 5432
+      POSTGRESS_USER: "${POSTGRESS_USER}"
+      POSTGRESS_PASSWORD: "${POSTGRESS_PASSWORD}"
+      POSTGRESS_DATABASE: "${POSTGRESS_DATABASE}"
+      POSTGRESS_PORT: "${POSTGRESS_PORT}"
     depends_on:
       db:
         condition: service_healthy
@@ -52,11 +53,11 @@ services:
     container_name: db
     image: postgres:13
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: homelibrary
+      POSTGRES_USER: "${POSTGRESS_USER}"
+      POSTGRES_PASSWORD: "${POSTGRESS_PASSWORD}"
+      POSTGRES_DB: "${POSTGRESS_DATABASE}"
     ports:
-      - "5432:5432"
+      - "${POSTGRESS_PORT}:${POSTGRESS_PORT}"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
