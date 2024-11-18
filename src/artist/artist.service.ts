@@ -5,12 +5,24 @@ import { CreateArtistDto } from './dto/createArtist.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CustomArtist } from './artist.entity';
+import { CustomFavs } from 'src/favs/favs.entity';
+import { CustomTrack } from 'src/track/track.entity';
+import { CustomAlbum } from 'src/album/album.entity';
 
 @Injectable()
 export class ArtistService {
   constructor(
     @InjectRepository(CustomArtist)
     private artistsRepository: Repository<CustomArtist>,
+
+    @InjectRepository(CustomFavs)
+    private favsRepository: Repository<CustomFavs>,
+
+    @InjectRepository(CustomTrack)
+    private tracksRepository: Repository<CustomTrack>,
+
+    @InjectRepository(CustomAlbum)
+    private albumsRepository: Repository<CustomAlbum>,
   ) {}
 
   public async getArtists(): Promise<Artist[]> {
@@ -69,5 +81,16 @@ export class ArtistService {
       throw new HttpException(`Artist id ${id} does not exist`, 404);
     }
     await this.artistsRepository.delete(id);
+    const favs = await this.favsRepository.findOne({
+      where: { id: 1 },
+    });
+
+    await this.tracksRepository.update({ artistId: id }, { artistId: null });
+    await this.albumsRepository.update({ artistId: id }, { artistId: null });
+
+    if (favs) {
+      favs.artists = favs.artists.filter((artistId) => artistId !== id);
+      await this.favsRepository.save(favs);
+    }
   }
 }

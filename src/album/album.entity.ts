@@ -11,6 +11,6 @@ export class CustomAlbum {
   @Column()
   year: number;
 
-  @Column()
+  @Column({ nullable: true })
   artistId: string | null;
 }

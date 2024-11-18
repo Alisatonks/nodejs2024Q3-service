@@ -1,18 +1,22 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { Album } from 'src/types';
-import { addAlbum, ALBUMS, deleteAlbum, updateAlb } from './album.utils';
-import { findAlbum } from './album.utils';
 import { validateId } from 'src/utils/helpers';
 import { CreateAlbumDto } from './dto/createAlbum.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CustomAlbum } from './album.entity';
 import { Repository } from 'typeorm';
+import { CustomFavs } from 'src/favs/favs.entity';
+import { CustomTrack } from 'src/track/track.entity';
 
 @Injectable()
 export class AlbumService {
   constructor(
     @InjectRepository(CustomAlbum)
     private albumsRepository: Repository<CustomAlbum>,
+    @InjectRepository(CustomFavs)
+    private favsRepository: Repository<CustomFavs>,
+    @InjectRepository(CustomTrack)
+    private trackRepository: Repository<CustomTrack>,
   ) {}
 
   public async getAlbums(): Promise<Album[]> {
@@ -71,5 +75,15 @@ export class AlbumService {
       throw new HttpException(`Album id ${id} does not exist`, 404);
     }
     await this.albumsRepository.delete(id);
+    const favs = await this.favsRepository.findOne({
+      where: { id: 1 },
+    });
+
+    await this.trackRepository.update({ albumId: id }, { albumId: null });
+
+    if (favs) {
+      favs.albums = favs.albums.filter((albumId) => albumId !== id);
+      await this.favsRepository.save(favs);
+    }
   }
 }

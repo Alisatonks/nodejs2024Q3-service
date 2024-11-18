@@ -1,19 +1,16 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class CustomTrack {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+export class CustomFavs {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column()
-  name: string;
+  @Column('simple-array', { default: [] })
+  artists: string[];
 
-  @Column()
-  albumId: string | null;
+  @Column('simple-array', { default: [] })
+  albums: string[];
 
-  @Column()
-  duration: number;
-
-  @Column()
-  artistId: string | null;
+  @Column('simple-array', { default: [] })
+  tracks: string[];
 }

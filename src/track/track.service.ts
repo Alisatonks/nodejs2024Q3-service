@@ -5,12 +5,15 @@ import { validateId } from 'src/utils/helpers';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CustomTrack } from './track.entity';
 import { Repository } from 'typeorm';
+import { CustomFavs } from 'src/favs/favs.entity';
 
 @Injectable()
 export class TrackService {
   constructor(
     @InjectRepository(CustomTrack)
     private tracksRepository: Repository<CustomTrack>,
+    @InjectRepository(CustomFavs)
+    private favsRepository: Repository<CustomFavs>,
   ) {}
 
   public async getTracks(): Promise<Track[]> {
@@ -31,12 +34,17 @@ export class TrackService {
   }
 
   public async postTrack(track: CreateTrackDto): Promise<Track> {
-    const newTrack = this.tracksRepository.create({
-      ...track,
-    });
-    await this.tracksRepository.save(newTrack);
-
-    return newTrack;
+    try {
+      const newTrack = this.tracksRepository.create({
+        ...track,
+      });
+      console.log('track created');
+      await this.tracksRepository.save(newTrack);
+      console.log(newTrack);
+      return newTrack;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   public async updateTrack(
@@ -71,5 +79,12 @@ export class TrackService {
       throw new HttpException(`Track id ${id} does not exist`, 404);
     }
     await this.tracksRepository.delete(id);
+    const favs = await this.favsRepository.findOne({
+      where: { id: 1 },
+    });
+    if (favs) {
+      favs.tracks = favs.tracks.filter((trackId) => trackId !== id);
+      await this.favsRepository.save(favs);
+    }
   }
 }
