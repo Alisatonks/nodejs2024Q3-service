@@ -1,10 +1,9 @@
-version: '3.8'
-
 services:
   nestapp:
     container_name: nestapp
-    image: homelibrary/nestapp:1.0.0
     build: .
+    image: homelibrary/nestapp:1.0.0
+    init: true
     ports:
       - "4000:4000"
     environment:
@@ -15,11 +14,40 @@ services:
       POSTGRESS_DATABASE: homelibrary
       POSTGRESS_PORT: 5432
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
-      - my-bridge-network 
+      - my-bridge-network
     restart: always
-
+    volumes:
+      - .:/usr/src/app 
+    command: npm run start:dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/user"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules       
   db:
     container_name: db
     image: postgres:13
@@ -32,12 +60,24 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
-      - my-bridge-network 
+      - my-bridge-network
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   pgdata: {}
 
 networks:
   my-bridge-network:
-    driver: bridge 
+    driver: bridge
+    name: home-library-network
