@@ -17,7 +17,8 @@ services:
     depends_on:
       - db
     networks:
-      - my-bridge-network  # Подключаем контейнер к user-defined bridge
+      - my-bridge-network 
+    restart: always
 
   db:
     container_name: db
@@ -31,11 +32,12 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
-      - my-bridge-network  # Подключаем контейнер к user-defined bridge
+      - my-bridge-network 
+    restart: always
 
 volumes:
   pgdata: {}
 
 networks:
   my-bridge-network:
-    driver: bridge  # Создаем user-defined bridge
+    driver: bridge 
