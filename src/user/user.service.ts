@@ -33,6 +33,10 @@ export class UserService {
     return rest;
   }
 
+  public async findUserWithLogin(login: string) {
+    return await this.usersRepository.findOne({ where: { login } });
+  }
+
   public async postUser(user: CreateUserDto): Promise<ReturnedUser> {
     const createdAt = Date.now();
     const newUser = this.usersRepository.create({
