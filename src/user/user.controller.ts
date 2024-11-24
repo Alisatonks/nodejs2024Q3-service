@@ -7,10 +7,12 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdatePasswordDto } from './dto/updatePassword.dto';
+import { JwtGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -21,6 +23,7 @@ export class UserController {
     return this.userService.getUsers();
   }
 
+  @UseGuards(JwtGuard)
   @Get(':id')
   async getUserById(@Param('id') id: string) {
     return this.userService.getUserById(id);
