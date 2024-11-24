@@ -18,6 +18,7 @@ import { JwtGuard } from 'src/auth/guards/jwt-auth.guard';
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @UseGuards(JwtGuard)
   @Get()
   async getUsers() {
     return this.userService.getUsers();
@@ -29,17 +30,20 @@ export class UserController {
     return this.userService.getUserById(id);
   }
 
+  @UseGuards(JwtGuard)
   @Post()
   async postUser(@Body() user: CreateUserDto) {
     return this.userService.postUser(user);
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
   @HttpCode(204)
   async deleteUser(@Param('id') id: string) {
     return this.userService.deleteUser(id);
   }
 
+  @UseGuards(JwtGuard)
   @Put(':id')
   async updatePassword(
     @Param('id') id: string,

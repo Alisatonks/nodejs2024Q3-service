@@ -10,13 +10,20 @@ import { JwtStrategy } from './strategies/jwt-strategy';
 import { RefreshJwtStrategy } from './strategies/refreshToken.strategy';
 
 @Module({
-  providers: [AuthService, UserService, LocalStrategy, JwtStrategy, RefreshJwtStrategy],
+  providers: [
+    AuthService,
+    UserService,
+    LocalStrategy,
+    JwtStrategy,
+    RefreshJwtStrategy,
+  ],
   controllers: [AuthController],
   imports: [
     TypeOrmModule.forFeature([CustomUser]),
     JwtModule.register({
-    secret: process.env.JWT_SECRET_KEY,
-    signOptions: {expiresIn: "60s"}
-  })]
+      secret: process.env.JWT_SECRET_KEY,
+      signOptions: { expiresIn: '60s' },
+    }),
+  ],
 })
 export class AuthModule {}

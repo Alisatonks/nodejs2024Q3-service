@@ -35,7 +35,7 @@ export class UserService {
   }
 
   public async findUserWithLogin(login: string) {
-    console.log('login', login)
+
     return await this.usersRepository.findOne({ where: { login } });
   }
 
@@ -87,10 +87,16 @@ export class UserService {
     if (!user) {
       throw new HttpException(`User id ${id} does not exist`, 404);
     }
-    if (user.password !== passwords.oldPassword) {
+    const isPasswordValid = await bcrypt.compare(
+      passwords.oldPassword,
+      user.password,
+    );
+    if (!isPasswordValid) {
       throw new HttpException(`Provided password is not valid`, 403);
     }
-    user.password = passwords.newPassword;
+
+    const hashedPassword = await bcrypt.hash(passwords.newPassword, 10);
+    user.password = hashedPassword;
     user.version += 1;
     user.updatedAt = Date.now();
 

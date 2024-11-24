@@ -38,9 +38,9 @@ export class TrackService {
       const newTrack = this.tracksRepository.create({
         ...track,
       });
-    
+
       await this.tracksRepository.save(newTrack);
-   
+
       return newTrack;
     } catch (e) {
       console.log(e);
