@@ -1,3 +1,5 @@
-dist
-node-modules
-.git
+dist/
+node_modules/
+.git/
+npm-debug.log
+.env

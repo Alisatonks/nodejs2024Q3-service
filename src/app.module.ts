@@ -19,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
     AlbumModule,
     TrackModule,
     FavsModule,
+    AuthModule,
     TypeOrmModule.forRoot({
       type: process.env.TYPE as DatabaseType,
       host: process.env.POSTGRESS_HOST,
